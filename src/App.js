@@ -1,10 +1,10 @@
 import React from 'react';
 import './App.css';
-import AsyncUserListComponent from './components/AsyncComponent';
+import Routing from './components/routing/Routing';
 function App() {
   return (
     <div className="App">
-      <AsyncUserListComponent/>
+      <Routing></Routing>
     </div>
   );
 }

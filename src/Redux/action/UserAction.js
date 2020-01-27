@@ -2,13 +2,21 @@ import {
     USER_FETCH_LOADING,
     USER_FETCH_SUCCESS,
     USER_FETCH_ERROR,
-    USER_POST_FETCH_LOADING,
-    USER_POST_FETCH_SUCCESS,
-    USER_POST_FETCH_ERROR
+    USER_POST_LOADING,
+    USER_POST_SUCCESS,
+    USER_POST_ERROR,
+    UPDATE_USER_PROFILE_LOADING,
+    UPDATE_USER_PROFILE_SUCCESS,
+    UPDATE_USER_PROFILE_ERROR,
+    DELETE_USER_PROFILE_LOADING,
+    DELETE_USER_PROFILE_SUCCESS,
+    DELETE_USER_PROFILE_ERROR,
+    FETCH_SINGLE_USER_LOADING,
+    FETCH_SINGLE_USER_SUCCESS,
+    FETCH_SINGLE_USER_ERROR
 } from '../types/EventTypes';
 import axios from 'axios';
-import { log } from 'util';
-
+// import { history } from 'useHistory';
 
 ///************GET*************//
 export const userLoading = () => {
@@ -35,32 +43,87 @@ export const userError = error => {
 ///************POST*************//
 export const postUserLoading = () => {
     return {
-        type: USER_POST_FETCH_LOADING,
+        type: USER_POST_LOADING,
     }
 }
 export const postUserSuccess = (users) => {
     return {
-        type: USER_POST_FETCH_SUCCESS,
+        type: USER_POST_SUCCESS,
         payload: users
     }
 }
 export const postUserError = (error) => {
     return {
-        type: USER_POST_FETCH_ERROR,
+        type: USER_POST_ERROR,
         payload: error
     }
 }
-///************POST*************//
 
+
+///************PUT*************//
+export const userUpdateLoading = () => {
+    return {
+        type: UPDATE_USER_PROFILE_LOADING,
+    }
+}
+export const userUpdateSuccess = (updateUser) => {
+    return {
+        type: UPDATE_USER_PROFILE_SUCCESS,
+        payload: updateUser
+    }
+}
+export const userUpdateError = (error) => {
+    return {
+        type: UPDATE_USER_PROFILE_ERROR,
+        payload: error
+    }
+}
+
+///************DELETE*************//
+export const deleteUserLoading = () => {
+    return {
+        type: DELETE_USER_PROFILE_LOADING,
+    }
+}
+export const deleteUserSuccess = (users) => {
+    return {
+        type: DELETE_USER_PROFILE_SUCCESS,
+        payload: users
+    }
+}
+export const deleteUserError = (error) => {
+    return {
+        type: DELETE_USER_PROFILE_ERROR,
+        payload: error
+    }
+}
+
+///************GET SINGLE USER*************//
+export const singleUserLoading = () => {
+    return {
+        type: FETCH_SINGLE_USER_LOADING,
+    }
+}
+export const singleUserSuccess = (user) => {
+    return {
+        type: FETCH_SINGLE_USER_SUCCESS,
+        payload: user
+    }
+}
+export const singleUserError = (error) => {
+    return {
+        type: FETCH_SINGLE_USER_ERROR,
+        payload: error
+    }
+}
 
 
 //GET API ACTION CREATOR
 export const fetchUsers = () => {
     return (dispatch) => {
         dispatch(userLoading)
-        axios.get('https://jsonplaceholder.typicode.com/users')
+        axios.get('http://192.168.1.45:5000/api/v1/user/list')
             .then(response => {
-                console.log(response)
                 const users = response.data
                 dispatch(userSuccess(users))
             }).catch(error => {
@@ -70,21 +133,57 @@ export const fetchUsers = () => {
     }
 }
 
-//POST API ACTION CREATOR
-export const postUsers = () => {
+//GET API FOR SINGLE USER
+export const fetchUser = (id) => {
     return (dispatch) => {
-        dispatch(postUserLoading)
-        axios.post('http://192.168.1.37:5000/api/v1/user')
+        dispatch(singleUserLoading)
+        axios.get('http://192.168.1.45:5000/api/v1/user/' + id)
             .then(response => {
-                const postUser = response.data;
-                dispatch(postUserSuccess(postUser))
-            })
-            .catch(error => {
-                const postErrmsg = error.message
-                dispatch(postUserSuccess(errorMsg))
+                const user = response
+                dispatch(singleUserSuccess(user))
+            }).catch(error => {
+                const errorMsg = error.message
+                dispatch(userError(errorMsg))
             })
     }
 }
+
+//POST API ACTION CREATOR
+export const postUsers = (data) => {
+    return (dispatch) => {
+        dispatch(postUserLoading)
+        axios.post('http://192.168.1.45:5000/api/v1/user', data)
+            .then(response => {
+                const users = response.data;
+                dispatch(postUserSuccess(users))
+            })
+            .catch(error => {
+                const postErrmsg = error.message
+                dispatch(postUserError(postErrmsg))
+            })
+    }
+}
+
+//PUT API ACTION CREATOR
+export const updateUser = (data) => {
+    return (dispatch) => {
+        dispatch(userUpdateLoading)
+        axios.put('http://192.168.1.45:5000/api/v1/user' + data._id, data)
+            .then(response => {
+                if (response.status === 200) {
+                    const updateUser = response.data
+                    dispatch(userUpdateSuccess(updateUser))
+                }
+            })
+            .catch(error => {
+                const postErrmsg = error.message
+                dispatch(userUpdateError(postErrmsg))
+            })
+    }
+}
+
+
+//DELETE API ACTION CREATOR
 
 
 

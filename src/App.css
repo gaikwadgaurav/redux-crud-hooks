@@ -1,10 +1,15 @@
 .App {
-  text-align: center;
+  text-align: left;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.nav-item {
+    display: inline-flex;
+    padding: 15px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
