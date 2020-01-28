@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postUsers, updateUser, fetchUser } from '../../Redux/action/UserAction';
+import { postUsers, updateUser, fetchUser, clearStateMsg } from '../../Redux/action/UserAction';
 import { Form, Button } from 'react-bootstrap';
+import { useHistory } from 'react-router-dom';
 
 export default function SignUpForm(props) {
     const selectedUser = useSelector(state => state.UserReducer.selectedUser)
+    const userState = useSelector(state => state.UserReducer);
     const dispatch = useDispatch();
     const [data, setData] = useState({
         firstName: '',
@@ -12,7 +14,9 @@ export default function SignUpForm(props) {
         email: '',
         password: ''
     });
+    const history = props.history;
     const [userId, setUserId] = useState(null)
+
     function handleChange(e) {
         setData({ ...data, [e.target.name]: e.target.value })
     }
@@ -20,21 +24,34 @@ export default function SignUpForm(props) {
     function saveForm() {
         dispatch(postUsers(data))
     }
-    const history = props.history;
 
     useEffect(() => {
+
         const id = props.match.params.id;
         if (id) {
             setUserId(id)
             dispatch(fetchUser(id))
         }
-
     }, [])
 
     useEffect(() => {
         if (selectedUser)
             setData(selectedUser)
     }, [selectedUser])
+
+    useEffect(() => {
+        if (userState.loading === false) {
+            history.push("/user/list")
+            dispatch(clearStateMsg())
+        }
+    }, [userState.loading]);
+
+    // useEffect(() => {
+    //     if (userState.loading === false) {
+
+    //     }
+    // }, [userState.loading])
+
 
     return (
         <Form>
@@ -55,7 +72,7 @@ export default function SignUpForm(props) {
 
             <Form.Group controlId="formBasicLastPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control type="password" name="password" value='' onChange={handleChange} placeholder="Enter password" />
+                <Form.Control type="password" name="password" value={data.password} onChange={handleChange} placeholder="Enter password" />
             </Form.Group>
 
             <Button variant="primary" type="button" onClick={saveForm}>

@@ -13,7 +13,8 @@ import {
     DELETE_USER_PROFILE_ERROR,
     FETCH_SINGLE_USER_LOADING,
     FETCH_SINGLE_USER_SUCCESS,
-    FETCH_SINGLE_USER_ERROR
+    FETCH_SINGLE_USER_ERROR,
+    CLEAR_STATE_MESSAGE
 } from '../types/EventTypes';
 import axios from 'axios';
 // import { history } from 'useHistory';
@@ -85,10 +86,10 @@ export const deleteUserLoading = () => {
         type: DELETE_USER_PROFILE_LOADING,
     }
 }
-export const deleteUserSuccess = (users) => {
+export const deleteUserSuccess = (userIndex) => {
     return {
         type: DELETE_USER_PROFILE_SUCCESS,
-        payload: users
+        payload: userIndex
     }
 }
 export const deleteUserError = (error) => {
@@ -114,6 +115,12 @@ export const singleUserError = (error) => {
     return {
         type: FETCH_SINGLE_USER_ERROR,
         payload: error
+    }
+}
+export const clearMsg = () => {
+    return {
+        type: CLEAR_STATE_MESSAGE,
+
     }
 }
 
@@ -164,26 +171,52 @@ export const postUsers = (data) => {
     }
 }
 
-//PUT API ACTION CREATOR
-export const updateUser = (data) => {
+//DELETE API ACTION CREATOR
+export const deleteUser = (userId, userIndex) => {
+    console.log()
     return (dispatch) => {
-        dispatch(userUpdateLoading)
-        axios.put('http://192.168.1.45:5000/api/v1/user' + data._id, data)
+        dispatch(deleteUserLoading)
+        axios.delete('http://192.168.1.45:5000/api/v1/user/' + userId)
             .then(response => {
                 if (response.status === 200) {
-                    const updateUser = response.data
-                    dispatch(userUpdateSuccess(updateUser))
+                    // let cloneData = data.slice()
+                    // const idFilter = cloneData.findIndex(data => data._id === id)
+                    // clonedDta.splice(idFilter, 1)
+                    // setData(clonedDta)
+                    dispatch(deleteUserSuccess(userIndex))
                 }
             })
             .catch(error => {
                 const postErrmsg = error.message
-                dispatch(userUpdateError(postErrmsg))
+                dispatch(deleteUserError(postErrmsg))
             })
     }
 }
 
+export const clearStateMsg = () => {
+    return (dispatch) => {
+        dispatch(clearMsg())
+    }
+}
 
-//DELETE API ACTION CREATOR
+
+// //PUT API ACTION CREATOR
+// export const updateUser = (data) => {
+//     return (dispatch) => {
+//         dispatch(userUpdateLoading)
+//         axios.put('http://192.168.1.45:5000/api/v1/user' + data._id, data)
+//             .then(response => {
+//                 if (response.status === 200) {
+//                     const updateUser = response.data
+//                     dispatch(userUpdateSuccess(updateUser))
+//                 }
+//             })
+//             .catch(error => {
+//                 const postErrmsg = error.message
+//                 dispatch(userUpdateError(postErrmsg))
+//             })
+//     }
+// }
 
 
 

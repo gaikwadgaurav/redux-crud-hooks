@@ -10,17 +10,21 @@ import {
     UPDATE_USER_PROFILE_ERROR,
     FETCH_SINGLE_USER_LOADING,
     FETCH_SINGLE_USER_SUCCESS,
-    FETCH_SINGLE_USER_ERROR
-    // DELETE_USER_PROFILE_LOADING,
-    // DELETE_USER_PROFILE_SUCCESS,
-    // DELETE_USER_PROFILE_ERROR
+    FETCH_SINGLE_USER_ERROR,
+    DELETE_USER_PROFILE_LOADING,
+    DELETE_USER_PROFILE_SUCCESS,
+    DELETE_USER_PROFILE_ERROR,
+    CLEAR_STATE_MESSAGE
 } from '../types/EventTypes';
 
 const initialState = {
-    loading: false,
+    status: '',
     users: [],
     selectedUser: null,
-    error: ''
+    error: '',
+    // createdAt: '',
+    // updatedAt: '',
+    loading: ''
 }
 
 const UserReducer = (state = initialState, action) => {
@@ -28,19 +32,21 @@ const UserReducer = (state = initialState, action) => {
         case USER_FETCH_LOADING:
             return {
                 ...state,
-                loading: true
+                loading: true,
             }
         case USER_FETCH_SUCCESS:
             return {
-                loading: false,
                 users: action.payload,
-                error: ''
+                loading: false,
+                error: '',
+                createdAt: '',
+                updatedAt: ''
             }
         case USER_FETCH_ERROR:
             return {
-                loading: false,
                 users: [],
-                error: action.payload
+                error: action.payload,
+                loading: true,
             }
         case USER_POST_LOADING: {
             return {
@@ -49,17 +55,23 @@ const UserReducer = (state = initialState, action) => {
             }
         }
         case USER_POST_SUCCESS: {
+            const userClone = state.users;
+            userClone.push(action.payload)
             return {
+                users: userClone,
+                error: '',
                 loading: false,
-                users: action.payload,
-                error: ''
+                createdAt: '',
+                updatedAt: ''
             }
         }
         case USER_POST_ERROR: {
             return {
-                loading: false,
+                createdAt: false,
+                updateadAt: false,
                 users: [],
-                error: action.payload
+                error: action.payload,
+                loading: true
             }
         }
         case UPDATE_USER_PROFILE_LOADING: {
@@ -71,16 +83,18 @@ const UserReducer = (state = initialState, action) => {
         case UPDATE_USER_PROFILE_SUCCESS: {
             return {
                 ...state,
-                loading: false,
                 users: action.payload,
-                error: ''
+                error: '',
+                loading: false,
+                createdAt: '',
+                updatedAt: ''
             }
         }
         case UPDATE_USER_PROFILE_ERROR: {
             return {
-                loading: false,
                 users: [],
-                error: action.payload
+                error: action.payload,
+                loading: true
             }
         }
         case FETCH_SINGLE_USER_LOADING: {
@@ -90,19 +104,54 @@ const UserReducer = (state = initialState, action) => {
             }
         }
         case FETCH_SINGLE_USER_SUCCESS: {
-            console.log('action.payload.data', action.payload.data)
+            //console.log('action.payload.data', action.payload.data)
             return {
                 ...state,
-                loading: false,
                 selectedUser: action.payload.data,
-                error: ''
+                error: '',
+                loading: false,
+                createdAt: '',
+                updatedAt: ''
             }
         }
         case FETCH_SINGLE_USER_ERROR: {
             return {
-                loading: false,
-                user: [],
-                error: action.payload
+                selectedUser: [],
+                error: action.payload,
+                loading: true
+            }
+        }
+        case DELETE_USER_PROFILE_LOADING: {
+            return {
+                ...state,
+                loading: true
+            }
+        }
+        case DELETE_USER_PROFILE_SUCCESS: {
+            const userIndex = action.payload;
+            let users = state.users.slice();
+            if (userIndex > -1) {
+                users.splice(userIndex, 1);
+            }
+            return {
+                ...state,
+                users,
+                error: '',
+                loading: false
+            }
+        }
+        case DELETE_USER_PROFILE_ERROR: {
+            return {
+                ...state,
+                users: [],
+                error: action.payload,
+                loading: true
+            }
+        }
+        case CLEAR_STATE_MESSAGE: {
+            return {
+                ...state,
+                loading: 'true',
             }
         }
         default:

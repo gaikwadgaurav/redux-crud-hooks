@@ -1,31 +1,46 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { userLoading, userSuccess, userError, fetchUsers } from '../../Redux';
+import { userLoading, userSuccess, userError, fetchUsers, deleteUser } from '../../Redux';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-export const AsyncUserListComponent = (props) => {
-    console.log(props);
+import { clearStateMsg } from '../../Redux/action/UserAction';
+
+export const GetUserComponent = () => {
+    //console.log(props);
     const users = useSelector(state => state.UserReducer.users);
+    const usersState = useSelector(state => state.UserReducer);
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(fetchUsers())
     }, []);
 
+    useEffect(() => {
+        if (usersState.loading === false) {
+            dispatch(clearStateMsg())
+        }
+    }, [usersState.loading]);
+
+
     const history = useHistory()
 
-    function Update(user) {
-        history.push(`/user/${user._id}/edit`)
+    function deleteUserRecord(userId, userIndex) {
+        dispatch(deleteUser(userId, userIndex))
     }
 
-    const renderTable = users && users.map(user => {
+    function Update(user) {
+        history.push(`/user/edit/${user._id}`)
+    }
+
+
+    const renderTable = users && users.map((user, userIndex) => {
         return (
             <tr key={user._id}>
                 <td>{user.firstName.toUpperCase()}</td>
                 <td>{user.lastName.toUpperCase()}</td>
                 <td>{user.email}</td>
                 <td><Button className="btnUpdate" onClick={() => Update(user)} variant="success" /></td>
-                {/* <td><Button onClick={() => remove(users._id)} className="btnDelete" variant="danger" /></td> */}
+                <td><Button onClick={() => deleteUserRecord(user._id, userIndex)} className="btnDelete" variant="danger" /></td>
             </tr>
         );
     });
@@ -48,4 +63,4 @@ export const AsyncUserListComponent = (props) => {
     );
 }
 
-export default AsyncUserListComponent
+export default GetUserComponent

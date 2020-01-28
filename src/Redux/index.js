@@ -1,2 +1,2 @@
 
-export { userLoading, userSuccess, userError, fetchUsers } from './action/UserAction';
+export { userLoading, userSuccess, userError, fetchUsers, deleteUser, clearMsg } from './action/UserAction';
