@@ -1,26 +1,23 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { userLoading, userSuccess, userError, fetchUsers, deleteUser } from '../../Redux';
+import { fetchUsers, deleteUser } from '../../Redux';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-import { clearStateMsg } from '../../Redux/action/UserAction';
+import SearchFilter from '../../components/searchFilter/SearchFilter';
+import Tables from '@material-ui/core/Table';
+import TableRow from '@material-ui/core/TableRow';
+import TableHead from '@material-ui/core/TableHead';
+import TableCell from '@material-ui/core/TableCell';
+import TableBody from '@material-ui/core/TableBody';
+import Pagination from '../../components/Pagination/Pagination';
+export const GetUserComponent = (props) => {
 
-export const GetUserComponent = () => {
-    //console.log(props);
     const users = useSelector(state => state.UserReducer.users);
-    const usersState = useSelector(state => state.UserReducer);
+
     const dispatch = useDispatch()
     useEffect(() => {
         dispatch(fetchUsers())
     }, []);
-
-    useEffect(() => {
-        if (usersState.loading === false) {
-            dispatch(clearStateMsg())
-        }
-    }, [usersState.loading]);
-
 
     const history = useHistory()
 
@@ -32,34 +29,33 @@ export const GetUserComponent = () => {
         history.push(`/user/edit/${user._id}`)
     }
 
-
-    const renderTable = users && users.map((user, userIndex) => {
-        return (
-            <tr key={user._id}>
-                <td>{user.firstName.toUpperCase()}</td>
-                <td>{user.lastName.toUpperCase()}</td>
-                <td>{user.email}</td>
-                <td><Button className="btnUpdate" onClick={() => Update(user)} variant="success" /></td>
-                <td><Button onClick={() => deleteUserRecord(user._id, userIndex)} className="btnDelete" variant="danger" /></td>
-            </tr>
-        );
-    });
-
     return (
-        <Table striped bordered hover>
-            <thead>
-                <tr>
-                    <th>First Name</th>
-                    <th>User Name</th>
-                    <th>Email</th>
-                    <th>Update</th>
-                    <th>Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                {renderTable}
-            </tbody>
-        </Table>
+        <div>
+            <Tables>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>First Name</TableCell>
+                        <TableCell>User Name</TableCell>
+                        <TableCell>Email</TableCell>
+                        <TableCell>Update</TableCell>
+                        <TableCell>Delete</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {users && users.map((user, userIndex) => (
+                        <TableRow key={user._id}>
+                            <TableCell>{user.firstName.toUpperCase()}</TableCell>
+                            <TableCell>{user.lastName.toUpperCase()}</TableCell>
+                            <TableCell>{user.email}</TableCell>
+                            <TableCell><Button className="btnUpdate" onClick={() => Update(user)} variant="success" /></TableCell>
+                            <TableCell><Button onClick={() => deleteUserRecord(user._id, userIndex)} className="btnDelete" variant="danger" /></TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Tables>
+            <SearchFilter {...props} />
+        </div>
+
     );
 }
 

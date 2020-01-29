@@ -14,10 +14,13 @@ import {
     FETCH_SINGLE_USER_LOADING,
     FETCH_SINGLE_USER_SUCCESS,
     FETCH_SINGLE_USER_ERROR,
-    CLEAR_STATE_MESSAGE
+    FILTER_USERLIST
+
+
+
 } from '../types/EventTypes';
 import axios from 'axios';
-// import { history } from 'useHistory';
+
 
 ///************GET*************//
 export const userLoading = () => {
@@ -40,7 +43,6 @@ export const userError = error => {
     }
 }
 
-
 ///************POST*************//
 export const postUserLoading = () => {
     return {
@@ -59,7 +61,6 @@ export const postUserError = (error) => {
         payload: error
     }
 }
-
 
 ///************PUT*************//
 export const userUpdateLoading = () => {
@@ -117,10 +118,13 @@ export const singleUserError = (error) => {
         payload: error
     }
 }
-export const clearMsg = () => {
-    return {
-        type: CLEAR_STATE_MESSAGE,
 
+
+///////////////FILTER USER////////////
+export const filterUserList = value => {
+    return {
+        type: FILTER_USERLIST,
+        payload: value
     }
 }
 
@@ -156,14 +160,18 @@ export const fetchUser = (id) => {
 }
 
 //POST API ACTION CREATOR
-export const postUsers = (data) => {
+export const postUsers = (data, props) => {
     return (dispatch) => {
         dispatch(postUserLoading)
         axios.post('http://192.168.1.45:5000/api/v1/user', data)
             .then(response => {
-                const users = response.data;
-                dispatch(postUserSuccess(users))
+                if (response.status === 200) {
+                    const users = response.data;
+                    dispatch(postUserSuccess(users))
+                    props.history.push('/user/list/')
+                }
             })
+
             .catch(error => {
                 const postErrmsg = error.message
                 dispatch(postUserError(postErrmsg))
@@ -173,16 +181,11 @@ export const postUsers = (data) => {
 
 //DELETE API ACTION CREATOR
 export const deleteUser = (userId, userIndex) => {
-    console.log()
     return (dispatch) => {
         dispatch(deleteUserLoading)
         axios.delete('http://192.168.1.45:5000/api/v1/user/' + userId)
             .then(response => {
                 if (response.status === 200) {
-                    // let cloneData = data.slice()
-                    // const idFilter = cloneData.findIndex(data => data._id === id)
-                    // clonedDta.splice(idFilter, 1)
-                    // setData(clonedDta)
                     dispatch(deleteUserSuccess(userIndex))
                 }
             })
@@ -193,30 +196,29 @@ export const deleteUser = (userId, userIndex) => {
     }
 }
 
-export const clearStateMsg = () => {
+
+//PUT API ACTION CREATOR
+export const updateUser = (data, props) => {
+    console.log(data)
     return (dispatch) => {
-        dispatch(clearMsg())
+        dispatch(userUpdateLoading)
+        axios.put('http://192.168.1.45:5000/api/v1/user/' + data._id, data)
+            .then(response => {
+                if (response.status === 200) {
+                    const updateUser = response.data;
+                    dispatch(userUpdateSuccess(updateUser));
+                    props.history.push('/user/list');
+                }
+            })
+            .catch(error => {
+                const postErrmsg = error.message
+                dispatch(userUpdateError(postErrmsg));
+            })
     }
 }
 
 
-// //PUT API ACTION CREATOR
-// export const updateUser = (data) => {
-//     return (dispatch) => {
-//         dispatch(userUpdateLoading)
-//         axios.put('http://192.168.1.45:5000/api/v1/user' + data._id, data)
-//             .then(response => {
-//                 if (response.status === 200) {
-//                     const updateUser = response.data
-//                     dispatch(userUpdateSuccess(updateUser))
-//                 }
-//             })
-//             .catch(error => {
-//                 const postErrmsg = error.message
-//                 dispatch(userUpdateError(postErrmsg))
-//             })
-//     }
-// }
+
 
 
 

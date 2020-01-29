@@ -14,17 +14,18 @@ import {
     DELETE_USER_PROFILE_LOADING,
     DELETE_USER_PROFILE_SUCCESS,
     DELETE_USER_PROFILE_ERROR,
-    CLEAR_STATE_MESSAGE
+    FILTER_USERLIST,
 } from '../types/EventTypes';
+import { updateUser } from '../action/UserAction';
 
 const initialState = {
     status: '',
     users: [],
+    clonedUsers: [],
     selectedUser: null,
     error: '',
-    // createdAt: '',
-    // updatedAt: '',
-    loading: ''
+    loading: '',
+    updatedUserList: []
 }
 
 const UserReducer = (state = initialState, action) => {
@@ -37,10 +38,9 @@ const UserReducer = (state = initialState, action) => {
         case USER_FETCH_SUCCESS:
             return {
                 users: action.payload,
+                clonedUsers: action.payload,
                 loading: false,
                 error: '',
-                createdAt: '',
-                updatedAt: ''
             }
         case USER_FETCH_ERROR:
             return {
@@ -55,20 +55,18 @@ const UserReducer = (state = initialState, action) => {
             }
         }
         case USER_POST_SUCCESS: {
-            const userClone = state.users;
+            const userClone = state.users.slice();
             userClone.push(action.payload)
             return {
                 users: userClone,
+                clonedUsers: userClone,
                 error: '',
                 loading: false,
-                createdAt: '',
-                updatedAt: ''
+
             }
         }
         case USER_POST_ERROR: {
             return {
-                createdAt: false,
-                updateadAt: false,
                 users: [],
                 error: action.payload,
                 loading: true
@@ -81,13 +79,18 @@ const UserReducer = (state = initialState, action) => {
             }
         }
         case UPDATE_USER_PROFILE_SUCCESS: {
+            const cloneUser = state.users.slice();
+            const cloneUserIndex = cloneUser.findIndex((user) => user._id === action.payload._id)
+            if (cloneUserIndex > -1) {
+                cloneUser[cloneUserIndex] = action.payload
+            }
             return {
                 ...state,
-                users: action.payload,
+                users: cloneUser,
+                clonedUsers: cloneUser,
                 error: '',
                 loading: false,
-                createdAt: '',
-                updatedAt: ''
+
             }
         }
         case UPDATE_USER_PROFILE_ERROR: {
@@ -110,8 +113,6 @@ const UserReducer = (state = initialState, action) => {
                 selectedUser: action.payload.data,
                 error: '',
                 loading: false,
-                createdAt: '',
-                updatedAt: ''
             }
         }
         case FETCH_SINGLE_USER_ERROR: {
@@ -136,6 +137,7 @@ const UserReducer = (state = initialState, action) => {
             return {
                 ...state,
                 users,
+                clonedUsers:users,
                 error: '',
                 loading: false
             }
@@ -148,10 +150,32 @@ const UserReducer = (state = initialState, action) => {
                 loading: true
             }
         }
-        case CLEAR_STATE_MESSAGE: {
+        case FILTER_USERLIST: {
+            const searchValue = action.payload;
+            let clonedUser = state.clonedUsers;
+            if (searchValue) {
+                clonedUser = clonedUser.filter(user => {
+                    return (
+                        (user &&
+                            user.firstName &&
+                            user.firstName.toLowerCase().search(searchValue.toLowerCase()) !==
+                            -1) ||
+                        (user &&
+                            user.lastName &&
+                            user.lastName.toLowerCase().search(searchValue.toLowerCase()) !==
+                            -1) ||
+                        (user &&
+                            user.email &&
+                            user.email.toLowerCase().search(searchValue.toLowerCase()) !==
+                            -1)
+                    )
+                })
+            } else {
+                clonedUser = clonedUser
+            }
             return {
                 ...state,
-                loading: 'true',
+                users: clonedUser
             }
         }
         default:

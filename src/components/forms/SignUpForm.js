@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { postUsers, updateUser, fetchUser, clearStateMsg } from '../../Redux/action/UserAction';
+import { postUsers, updateUser, fetchUser } from '../../Redux/action/UserAction';
 import { Form, Button } from 'react-bootstrap';
-import { useHistory } from 'react-router-dom';
 
 export default function SignUpForm(props) {
     const selectedUser = useSelector(state => state.UserReducer.selectedUser)
-    const userState = useSelector(state => state.UserReducer);
     const dispatch = useDispatch();
     const [data, setData] = useState({
         firstName: '',
@@ -22,11 +20,14 @@ export default function SignUpForm(props) {
     }
 
     function saveForm() {
-        dispatch(postUsers(data))
+        if (userId) {
+            dispatch(updateUser(data, props))
+        } else {
+            dispatch(postUsers(data, props))
+        }
     }
 
     useEffect(() => {
-
         const id = props.match.params.id;
         if (id) {
             setUserId(id)
@@ -38,20 +39,6 @@ export default function SignUpForm(props) {
         if (selectedUser)
             setData(selectedUser)
     }, [selectedUser])
-
-    useEffect(() => {
-        if (userState.loading === false) {
-            history.push("/user/list")
-            dispatch(clearStateMsg())
-        }
-    }, [userState.loading]);
-
-    // useEffect(() => {
-    //     if (userState.loading === false) {
-
-    //     }
-    // }, [userState.loading])
-
 
     return (
         <Form>
