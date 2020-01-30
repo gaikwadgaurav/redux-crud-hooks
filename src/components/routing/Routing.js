@@ -10,10 +10,10 @@ export default function Routing() {
     return (<Router>
         <Navbar />
         <div>
+            <Route path="/user/add" component={SignUpForm}></Route>
+            <Route path="/user/list" component={GetUserComponent}></Route>
+            <Route path="/user/edit/:id" component={SignUpForm}></Route>
             <Route exact path="/" component={Home}></Route>
-            <Route  path="/user/add" component={SignUpForm}></Route>
-            <Route  path="/user/list" component={GetUserComponent}></Route>
-            <Route  path="/user/edit/:id" component={SignUpForm}></Route>
         </div>
     </Router>
     );

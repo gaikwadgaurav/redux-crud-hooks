@@ -1,20 +1,26 @@
 import React, { useEffect } from 'react';
 import { fetchUsers, deleteUser } from '../../Redux';
 import { useSelector, useDispatch } from 'react-redux';
-import { Table, Button } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import SearchFilter from '../../components/searchFilter/SearchFilter';
-import Tables from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import TableHead from '@material-ui/core/TableHead';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import Pagination from '../../components/Pagination/Pagination';
+import GetUserGlobalCss from '../getUser/GetUserGlobalCss';
+import { Table, TableRow, TableHead, TableCell, TableBody, TablePagination, Paper, TableContainer, Button, withStyles } from '@material-ui/core';
+
 export const GetUserComponent = (props) => {
 
     const users = useSelector(state => state.UserReducer.users);
-
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const emptyRows = rowsPerPage - Math.min(rowsPerPage, users.length - page * rowsPerPage);
     const dispatch = useDispatch()
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+    const handleChangeRowsPerPage = event => {
+        setRowsPerPage(parseInt(event.target.value));
+    };
+
     useEffect(() => {
         dispatch(fetchUsers())
     }, []);
@@ -29,32 +35,48 @@ export const GetUserComponent = (props) => {
         history.push(`/user/edit/${user._id}`)
     }
 
+
     return (
         <div>
-            <Tables>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>First Name</TableCell>
-                        <TableCell>User Name</TableCell>
-                        <TableCell>Email</TableCell>
-                        <TableCell>Update</TableCell>
-                        <TableCell>Delete</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {users && users.map((user, userIndex) => (
-                        <TableRow key={user._id}>
-                            <TableCell>{user.firstName.toUpperCase()}</TableCell>
-                            <TableCell>{user.lastName.toUpperCase()}</TableCell>
-                            <TableCell>{user.email}</TableCell>
-                            <TableCell><Button className="btnUpdate" onClick={() => Update(user)} variant="success" /></TableCell>
-                            <TableCell><Button onClick={() => deleteUserRecord(user._id, userIndex)} className="btnDelete" variant="danger" /></TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Tables>
+            <Paper>
+                <GetUserGlobalCss />
+                <TableContainer>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>First Name</TableCell>
+                                <TableCell>User Name</TableCell>
+                                <TableCell>Email</TableCell>
+                                <TableCell>Update</TableCell>
+                                <TableCell>Delete</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {users && users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user, userIndex) => (
+                                <TableRow key={user._id}>
+                                    <TableCell>{user.firstName.toUpperCase()}</TableCell>
+                                    <TableCell>{user.lastName.toUpperCase()}</TableCell>
+                                    <TableCell>{user.email}</TableCell>
+                                    <TableCell><Button className="btnUpdate" onClick={() => Update(user)} variant="contained" color='primary'>Update</Button></TableCell>
+                                    <TableCell><Button onClick={() => deleteUserRecord(user._id, userIndex)} className="btnDelete" variant='contained' color="secondary" >Delete</Button></TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <TablePagination
+                    rowsPerPageOptions={[5, 10, 15, { value: users.length, label: 'All' }]}
+                    component="div"
+                    count={users.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onChangePage={handleChangePage}
+                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                />
+            </Paper>
+
             <SearchFilter {...props} />
-        </div>
+        </div >
 
     );
 }

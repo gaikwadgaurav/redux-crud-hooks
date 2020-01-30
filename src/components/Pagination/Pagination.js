@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -12,7 +12,10 @@ import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 
 export default function Pagination(props) {
+    const { count, page, rowsPerPage, onChangePage } = props;
 
-
-
+    // console.log(props)
+    return (
+        <div></div>
+    )
 }
