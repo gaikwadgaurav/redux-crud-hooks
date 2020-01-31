@@ -14,12 +14,57 @@ import {
     FETCH_SINGLE_USER_LOADING,
     FETCH_SINGLE_USER_SUCCESS,
     FETCH_SINGLE_USER_ERROR,
-    FILTER_USERLIST
-
-
-
+    FILTER_USERLIST,
+    SIGN_IN_BEGIN,
+    SIGN_IN_SUCCESS,
+    SIGN_IN_ERROR,
+    SIGN_OUT_BEGIN,
+    SIGN_OUT_SUCCESS,
+    SIGN_OUT_ERROR
 } from '../types/EventTypes';
 import axios from 'axios';
+
+///**************SIGN-IN**************///
+export const signInBegin = () => {
+    return {
+        type: SIGN_IN_BEGIN,
+    }
+}
+
+export const signInSuccess = user => {
+    return {
+        type: SIGN_IN_SUCCESS,
+        payload: user
+    }
+}
+
+export const signInError = error => {
+    return {
+        type: SIGN_IN_ERROR,
+        payload: error
+    }
+}
+
+///**************SIGN-OUT**************///
+export const signOutBegin = () => {
+    return {
+        type: SIGN_OUT_BEGIN,
+    }
+}
+
+export const signOutSuccess = user => {
+    return {
+        type: SIGN_OUT_SUCCESS,
+        payload: user
+    }
+}
+
+export const signOutError = error => {
+    return {
+        type: SIGN_OUT_ERROR,
+        payload: error
+    }
+}
 
 
 ///************GET*************//
@@ -129,6 +174,34 @@ export const filterUserList = value => {
 }
 
 
+//SIGN - IN API ACTION CREATOR
+const options = {
+    headers: {
+        'Content-Type': 'application/json',
+        "Access-Control-Allow-Origin": "*",
+    }
+};
+export const signIn = (data, props) => {
+
+    return (dispatch) => {
+        dispatch(signInBegin)
+        axios.post('http://192.168.1.45:3000/front/v1/user/login',
+            data,
+            options)
+            .then(response => {
+                if (response.data.token) {
+                    localStorage.setItem('token', response.data.token)
+                    dispatch(signInSuccess(response.data))
+                    props.history.push('/user/list')
+                }
+            })
+            .catch(error => {
+                const postErrmsg = error.message
+                dispatch(signInError(postErrmsg))
+            })
+    }
+}
+
 //GET API ACTION CREATOR
 export const fetchUsers = () => {
     return (dispatch) => {
@@ -216,6 +289,7 @@ export const updateUser = (data, props) => {
             })
     }
 }
+
 
 
 

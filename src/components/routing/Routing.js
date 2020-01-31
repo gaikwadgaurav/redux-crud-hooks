@@ -5,15 +5,19 @@ import Home from '../../pages/home/Home';
 import GetUserComponent from '../../pages/getUser/GetUserComponent';
 import Navbar from '../navBar/Navbar';
 import SignUpForm from "../forms/SignUpForm";
-
+import Login from '../../pages/login/Login'
+import { PrivateRoute } from '../routing/PrivateRouting';
+import { PublicRoute } from '../routing/PublicRouting';
 export default function Routing() {
     return (<Router>
         <Navbar />
         <div>
+
             <Route path="/user/add" component={SignUpForm}></Route>
             <Route path="/user/list" component={GetUserComponent}></Route>
             <Route path="/user/edit/:id" component={SignUpForm}></Route>
-            <Route exact path="/" component={Home}></Route>
+            <PrivateRoute exact path="/login" component={Login}></PrivateRoute>
+            <PublicRoute exact path="/home" component={Home}></PublicRoute>
         </div>
     </Router>
     );

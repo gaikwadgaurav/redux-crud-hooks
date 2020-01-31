@@ -15,6 +15,12 @@ import {
     DELETE_USER_PROFILE_SUCCESS,
     DELETE_USER_PROFILE_ERROR,
     FILTER_USERLIST,
+    SIGN_IN_BEGIN,
+    SIGN_IN_SUCCESS,
+    SIGN_IN_ERROR,
+    SIGN_OUT_BEGIN,
+    SIGN_OUT_SUCCESS,
+    SIGN_OUT_ERROR
 } from '../types/EventTypes';
 import { updateUser } from '../action/UserAction';
 
@@ -25,7 +31,8 @@ const initialState = {
     selectedUser: null,
     error: '',
     loading: '',
-    updatedUserList: []
+    updatedUserList: [],
+    isSignOut: false
 }
 
 const UserReducer = (state = initialState, action) => {
@@ -137,7 +144,7 @@ const UserReducer = (state = initialState, action) => {
             return {
                 ...state,
                 users,
-                clonedUsers:users,
+                clonedUsers: users,
                 error: '',
                 loading: false
             }
@@ -178,6 +185,64 @@ const UserReducer = (state = initialState, action) => {
                 users: clonedUser
             }
         }
+        case SIGN_IN_BEGIN: {
+            return {
+                ...state,
+                users: [],
+                isAuthenticated: false,
+                token: ''
+            }
+        }
+        case SIGN_IN_SUCCESS: {
+            const userClone = state.users.slice()
+            console.log(userClone)
+            return {
+                ...state,
+                users: action.payload,
+                token: action.payload,
+                error: '',
+                isAuthenticated: true,
+
+            }
+        }
+        case SIGN_IN_ERROR: {
+            return {
+                ...state,
+                users: [],
+                error: action.payload,
+                loading: false
+            }
+        }
+
+        case SIGN_OUT_BEGIN: {
+            return {
+                ...state,
+                users: [],
+                isAuthenticated: false,
+                isSignOut: false
+            }
+        }
+        case SIGN_OUT_SUCCESS: {
+            return {
+                ...state,
+                users: action.payload,
+                error: '',
+                isAuthenticated: true,
+                isSignOut: true
+            }
+        }
+        case SIGN_IN_ERROR: {
+            return {
+                ...state,
+                users: [],
+                error: '',
+                isAuthenticated: false,
+                isSignOut: false
+            }
+        }
+
+
+
         default:
             return state;
     }

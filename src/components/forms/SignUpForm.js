@@ -61,7 +61,7 @@ export default function SignUpForm(props) {
 
             <Form.Group controlId="formBasicEmail">
                 <TextField fullWidth label='Email' type="email" name="email" value={data.email} onChange={handleChange} />
-                {emailError.value ? <Typography>{emailError.message}</Typography> : ""}
+                {emailError.value ? <Typography label='error'>{emailError.message}</Typography> : ""}
             </Form.Group>
 
             <Form.Group controlId="formBasicLastPassword">
